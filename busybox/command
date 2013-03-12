@@ -1,0 +1,12 @@
+make CROSS_COMPILE=/home/arcturus/arm/2011-03/bin/arm-none-eabi-
+make CROSS_COMPILE=/home/arcturus/arm/2012-03/bin/arm-none-eabi-
+
+make CROSS_COMPILE=/home/arcturus/arm/armv6/bin/armv6l-
+
+export PATH=$PATH:/home/arcturus/arm/2011-03/bin/
+
+make CROSS_COMPILE=arm-none-eabi-
+
+
+
+CC=/home/arcturus/arm/armv6/bin/armv6l-gcc ./configure --host=/home/arcturus/arm/armv6/bin/armv6l- 
