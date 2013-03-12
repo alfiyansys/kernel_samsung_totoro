@@ -1,0 +1,444 @@
+#!/sbin/busybox sh
+
+#USERNAME=$(/sbin/busybox whoami)
+#SIGNATURE="Arcturus Project"
+
+### Originally created by Maroc-OS, modified by Alfiyan (@alfiyansys) ###
+
+# Loging as Root
+chmod 6777 /sbin/su
+/sbin/su
+
+## bootlog folder check
+if /sbin/busybox test -d /data/arcturus ; then
+echo "log folder found, skipping"
+else
+/sbi/busybox mkdir /data/arcturus
+fi
+
+# Remove Kernel file if it is big
+FILESIZE=$(/sbin/busybox wc -c /data/arcturus/IanKernel.log)
+if /sbin/busybox test "$FILESIZE" -ge "4096"; then
+	/sbin/busybox rm /data/arcturus/IanKernel.log
+fi
+sync
+
+# bootlog
+echo "===============================================" > /data/arcturus/IanKernel.log
+echo " IanKernel bootlog - ( AT ) - " $(/sbin/busybox date) >> /data/arcturus/IanKernel.log
+echo "" $(/sbin/busybox uname -a) >> /data/arcturus/IanKernel.log
+echo " " >> /data/arcturus/IanKernel.log
+
+/sbin/busybox chown 0.1000 /system/bin/sh
+/system/bin/toolbox chown root.system /system/bin/sh
+
+############# Start the important things #############
+
+# UnlockBML & Remount Read/Write
+/sbin/bmlunlock
+/sbin/busybox mount -o remount,rw /dev/block/stl9 /system
+/sbin/busybox mount -o remount,rw / /
+/sbin/busybox mkdir /bootparam
+#/sbin/busybox mkdir /system/etc/bacem
+
+# Action determination
+echo "- Determining actions..... mounting SDcard" >> /data/arcturus/IanKernel.log
+/sbin/busybox mkdir /tmp/sdcard
+/sbin/busybox mount /dev/block/mmcblk0p1 /tmp/sdcard
+
+## IanRoot determination
+if /sbin/busybox test -f /system/ian_noroot ; then
+echo "- Found det file 1!" >> /data/arcturus/IanKernel.log
+/sbin/busybox touch /bootparam/noroot_system
+fi
+
+if /sbin/busybox test -d /tmp/sdcard/noroot ; then
+echo "- Found det file 2!" >> /data/arcturus/IanKernel.log
+/sbin/busybox touch /bootparam/userfolder_noroot
+fi
+
+if /sbin/busybox test -f /tmp/sdcard/ian_noroot ; then
+echo "- Found det file 3!" >> /data/arcturus/IanKernel.log
+/sbin/busybox touch /bootparam/userfile_noroot
+fi
+
+## Busybox determination
+if /sbin/busybox test -f /system/nobb ; then
+echo "- Found det file 4!" >> /data/arcturus/IanKernel.log
+/sbin/busybox touch /bootparam/nobb_system
+fi
+
+if /sbin/busybox test -f /tmp/sdcard/nobb ; then
+echo "- Found det file 5!" >> /data/arcturus/IanKernel.log
+/sbin/busybox touch /bootparam/nobb_user
+fi
+
+if /sbin/busybox test -f /system/etc/bacem/ctl ; then
+echo "- Found det file 6!" >> /data/arcturus/IanKernel.log
+/sbin/busybox echo $(/sbin/busybox cat /system/etc/bacem/ctl) > /bootparam/bacemctl
+fi
+
+if /sbin/busybox test -f /data/arcturus/kickass ; then
+echo "- Found det file 7!" >> /data/arcturus/IanKernel.log
+/sbin/busybox touch /bootparam/kickass
+fi
+
+if /sbin/busybox test -f /tmp/sdcard/zram ; then
+echo "- Found det file 8!" >> /data/arcturus/IanKernel.log
+/sbin/busybox touch /bootparam/zram
+fi
+
+if /sbin/busybox test -f /system/zram ; then
+echo "- Found det file 9!" >> /data/arcturus/IanKernel.log
+/sbin/busybox touch /bootparam/zram
+fi
+
+if /sbin/busybox test -f /nobacem ; then
+echo "- Found det file 10!" >> /data/arcturus/IanKernel.log
+/sbin/busybox touch /bootparam/nobacem
+fi
+
+/sbin/busybox umount /tmp/sdcard
+/sbin/busybox rmdir /tmp/sdcard
+echo "- Action has been determined! tmp SDcard unmounted" >> /data/arcturus/IanKernel.log
+/sbin/busybox sync
+
+# IanRoot
+if /sbin/busybox test -f /bootparam/noroot_system ; then
+echo "- System override, IanRoot disabled!" >> /data/arcturus/IanKernel.log
+elif /sbin/busybox test -f /bootparam/userfolder_noroot ; then
+echo "- User trigger 1 override, IanRoot disabled!" >> /data/arcturus/IanKernel.log
+elif /sbin/busybox test -f /bootparam/userfile_noroot ; then
+echo "- User trigger 2 override, IanRoot disabled!" >> /data/arcturus/IanKernel.log
+else
+echo "- Forcing IanRoot!" >> /data/arcturus/IanKernel.log
+echo "- Brute su binary" >> /data/arcturus/IanKernel.log
+/sbin/busybox cp /sbin/su /system/xbin/su
+/sbin/busybox chmod 6755 /system/xbin/su
+echo "- Brute Superuser app" >> /data/arcturus/IanKernel.log
+/sbin/busybox cp /sbin/Superuser.apk /system/app/Superuser.apk
+/sbin/busybox chmod 644 /system/app/Superuser.apk
+echo "- IanRoot Complete... " >> /data/arcturus/IanKernel.log
+
+fi
+
+
+# Checking root su binary
+#echo "- Forcing superuser permissions " >> /data/arcturus/IanKernel.log
+#if /sbin/busybox test -f /system/xbin/su ; then
+#echo "- Superuser binary found on /system/xbin/su " >> /data/arcturus/IanKernel.log
+#/sbin/busybox cp /sbin/su /system/xbin/su
+#/sbin/busybox chmod 6755 /system/xbin/su
+#elif /sbin/busybox test -f /system/bin/su ; then
+#echo "- Superuser binary found on /system/bin/su " >> /data/arcturus/IanKernel.log
+#/sbin/busybox chmod 6755 /system/bin/su
+#else
+#echo "- Superuser binary not found on /system/xbin/ or /system/bin/, copying" >> /data/arcturus/IanKernel.log  
+#/sbin/busybox cp /sbin/su /system/xbin/su
+#/sbin/busybox chmod 6755 /system/xbin/su
+#fi
+/sbin/busybox sync
+
+# Checking root su app
+#if /sbin/busybox test -f /system/app/Superuser.apk ; then
+#echo "- Superuser app found as /system/app/Superuser.apk " >> /data/arcturus/IanKernel.log
+#/sbin/busybox cp /sbin/Superuser.apk /system/app/Superuser.apk
+#/sbin/busybox chmod 644 /system/app/Superuser.apk
+#elif /sbin/busybox test -f /system/app/SuperUser.apk ; then
+#echo "- Superuser app found as /system/app/SuperUser.apk " >> /data/arcturus/IanKernel.log
+#else
+#echo "- Superuser app not found, copying" >> /data/arcturus/IanKernel.log  
+#/sbin/busybox cp /sbin/Superuser.apk /system/app/Superuser.apk
+#/sbin/busybox chmod 644 /system/app/Superuser.apk
+#fi
+#/sbin/busybox sync
+
+#/sbin/busybox chown root.system /res/*
+#/sbin/busybox chown root.system /res/images/*
+
+# Hack BootLogo
+#/sbin/busybox mount -o remount,rw -t j4fs /dev/block/stl6 /mnt/.lfs
+#/sbin/busybox mv /res/logo.jpg /mnt/.lfs/logo.jpg
+#/sbin/busybox sync
+
+# Create Needed Directories
+###########################
+
+# Fix /etc Folder link to /system/etc
+if /sbin/busybox test -d /etc ; then
+	echo "- Make symlink from /etc to /system/etc " >> /data/arcturus/IanKernel.log
+	/sbin/busybox rm -Rf /etc
+	/sbin/busybox ln -s /system/etc /etc
+fi
+/sbin/busybox sync
+
+# Add /devices Link for /sys/devices to fix a bug
+if /sbin/busybox test -f /system/bin/sysinitian ; then
+	echo "- Sysinitian found, skipping " >> /data/arcturus/IanKernel.log
+else
+	echo "- Sysinitian not found, create symlink " >> /data/arcturus/IanKernel.log
+	ln -s /sbin/sysinit /system/bin/sysinitian
+fi
+/sbin/busybox sync
+
+# Symlink /data/arcturus Folder link to /arcturus
+if /sbin/busybox test -d /data/arcturus ; then
+	echo "- Make symlink from /arcturus to /data/arcturus " >> /data/arcturus/IanKernel.log
+	/sbin/busybox rm -Rf /arcturus
+	/sbin/busybox ln -s /data/arcturus /arcturus
+fi
+/sbin/busybox sync
+
+# Add /devices Link for /sys/devices to fix a bug
+if /sbin/busybox test -f /devices ; then
+	/sbin/busybox rm -R /devices
+	/sbin/busybox ln -s /sys/devices /devices
+fi
+/sbin/busybox sync
+
+# check and linking zipalign binary into system
+if /sbin/busybox test -f /system/bin/zipalign ; then
+echo "- zipalign found on /system/bin/zipalign" >> /data/arcturus/IanKernel.log
+elif /sbin/busybox test -f /system/xbin/zipalign ; then
+echo "- zipalign found on /system/xbin/zipalign" >> /data/arcturus/IanKernel.log
+else
+echo "- zipalign not found on /system/xbin/zipalign" >> /data/arcturus/IanKernel.log
+/sbin/busybox ln -s /sbin/zipalign /system/xbin/zipalign
+echo "- zipalign symlinked on /system/xbin/zipalign" >> /data/arcturus/IanKernel.log
+fi
+/sbin/busybox sync
+
+# linking cpucheck to xbin
+echo "- Symlinking cpucheck" >> /data/arcturus/IanKernel.log
+/sbin/busybox rm /system/xbin/cpucheck
+/sbin/busybox ln -s /sbin/cpucheck /system/xbin/cpucheck
+/sbin/busybox chmod 755 /system/xbin/cpucheck
+
+# linking bacemctl to xbin
+echo "- Symlinking bacemctl" >> /data/arcturus/IanKernel.log
+/sbin/busybox rm /system/xbin/bacemctl
+/sbin/busybox ln -s /sbin/bacemctl /system/xbin/bacemctl
+/sbin/busybox chmod 755 /system/xbin/bacemctl
+
+# linking iankernel to xbin
+echo "- Symlinking iankernel" >> /data/arcturus/IanKernel.log
+/sbin/busybox rm /system/xbin/iankernel
+/sbin/busybox ln -s /sbin/iankernel /system/xbin/iankernel
+/sbin/busybox chmod 755 /system/xbin/iankernel
+
+# Create init.d Filder Scripts & Fix permissions
+echo "- Checking init.d script permission" >> /data/arcturus/IanKernel.log
+if /sbin/busybox test ! -d /system/etc/init.d ; then
+	/sbin/busybox mkdir -p /system/etc/init.d
+	/sbin/busybox chmod 777 /system/etc/init.d
+	/sbin/busybox cp /lib/scripts/* /system/etc/init.d/
+	/sbin/busybox chmod 777 /system/etc/init.d/*
+else
+	/sbin/busybox chmod 777 /system/etc/init.d
+	/sbin/busybox cp /lib/scripts/* /system/etc/init.d/
+	/sbin/busybox chmod 777 /system/etc/init.d/*
+fi
+/sbin/busybox sync
+
+# enable a2sd
+if /sbin/busybox test -f /system/bin/a2sd ; then
+echo "- Found a2sd" >> /data/arcturus/IanKernel.log
+	#service a2sd
+	#/system/bin/logwrapper /system/bin/sh /system/bin/a2sd
+else
+echo "- a2sd not found" >> /data/arcturus/IanKernel.log
+fi
+/sbin/busybox sync
+
+# Enable init.d support
+echo "- Run init.d" >> /data/arcturus/IanKernel.log
+#if /sbin/busybox test -d /system/etc/init.d ; then
+#	/system/bin/logwrapper /sbin/busybox run-parts /system/etc/init.d
+#fi
+#/sbin/busybox sync
+
+# Fix permissions in /sbin
+echo "- Fix /sbin permissions" >> /data/arcturus/IanKernel.log
+/sbin/busybox chmod 755 /sbin/*
+/sbin/busybox chmod 06755 /sbin/busybox
+/sbin/busybox chmod 06755 /sbin/su
+
+#######################################################
+
+# Install New BusyBox Version
+echo "- Installing busybox in /sbin" >> /data/arcturus/IanKernel.log
+/sbin/busybox --install -s /sbin/
+#ln -s /sbin/recovery /sbin/busybox
+
+#####################################################################
+# system now works with busybox commands                            #
+# without full path to busybox file.                                #
+# Ex : command [option] instead of /sbin/busybox command [option]    #
+#####################################################################
+
+# busybox check
+if test -f /system/xbin/busybox ; then
+echo "- Busybox found on /system/xbin/busybox" >> /data/arcturus/IanKernel.log
+else
+echo "- Busybox not found on /system/xbin/busybox, making symbolic link" >> /data/arcturus/IanKernel.log
+	ln -s /sbin/busybox /system/xbin/busybox
+	chmod 6755 /system/xbin/busybox
+fi
+sync
+
+# busybox Install, using determinations
+if test -f /bootparam/nobb_system ; then
+echo "- Busybox not installed, system override!" >> /data/arcturus/IanKernel.log
+elif test -f /bootparam/nobb_user ; then
+echo "- Busybox not installed, user override!" >> /data/arcturus/IanKernel.log
+else
+echo "- Installing Arcturus Busybox" >> /data/arcturus/IanKernel.log
+/sbin/busybox --install -s /system/xbin/
+fi
+sync
+
+#Fix sh file/dalvik-cache in some CM7 Versions
+if /sbin/busybox test -f /system/bin/sh0 ; then
+	echo "- Rename /system/bin/sh0 (CM7 detected)" >> /data/arcturus/IanKernel.log
+	/sbin/busybox mv /system/bin/sh0 /system/bin/sh
+	#/sbin/busybox ln -s /sbin/busybox /system/bin/sh
+	echo "- Fix /data/dalvik-cache (CM7 detected)" >> /data/arcturus/IanKernel.log
+	/sbin/busybox ln -s /data/dalvik-cache /cache/dalvik-cache
+fi
+sync
+
+# Fix Screwy Ownerships Problems to root.system
+#for arcturus in default.prop init init.goldfish.rc init.rc init.charge.rc init.bcm21553.rc ueventd.rc recovery.rc fota.rc lib res sbin
+#do
+#	/system/bin/toolbox chown root.system /$arcturus
+#	/system/bin/toolbox chown root.system /$arcturus/*
+#done
+chown root.system /lib/modules/*
+chown root.system /system/lib/modules/*
+chown root.system /res/*
+chown root.system /res/images/*
+chmod 06755 /etc/dbus.conf
+
+# Kickass kernel by zeppelinrox
+if /sbin/busybox test -f /data/arcturus/kickass ; then
+chmod 755 /lib/scripts/kickass
+sh /lib/scripts/kickass
+fi
+sync
+
+# Install Kernel Modules
+if /sbin/busybox test -d /sdcard/system/lib/modules ; then
+	/sbin/busybox cp -R /sdcard/system/lib/modules/* /system/lib/modules/
+	/sbin/busybox rm -Rf /sdcard/system/
+fi
+sync
+
+BaCeM tweak, thanks to irfanbagus
+if test -f /bootparam/nobacem ; then
+	echo "- Bacem tweak disabled" >> /data/arcturus/IanKernel.log
+else
+	if test -f /bootparam/bacemctl ; then
+		insmod /lib/modules/bacem_tweak.ko
+		sleep 1
+		OLDGOV=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)
+		echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+		echo 312000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		echo 832000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		echo $OLDGOV > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+		echo $(cat /bootparam/bacemctl) > /proc/sys/bacem/volt/cpu
+		echo "- Bacem tweak IanKernel control trigger found!" >> /data/arcturus/IanKernel.log
+		echo "- Running bacem tweak at" $(cat /bootparam/bacemctl) "mV" >> /data/arcturus/IanKernel.log
+		sleep 1
+	else
+		echo "- Running BaCeM tweak, IanKernel default at -120 mV" >> /data/arcturus/IanKernel.log
+		VOLTAGE=-120mV
+		insmod /lib/modules/bacem_tweak.ko
+		sleep 1
+		OLDGOV=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)
+		echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+		echo 312000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		echo 832000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		echo $OLDGOV > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+		echo $VOLTAGE > /proc/sys/bacem/volt/cpu
+		echo "- BaCeM tweak done... " >> /data/arcturus/IanKernel.log
+		sleep 1
+	fi
+fi
+sync
+
+# Load more module for governor, thanks to savie
+echo "- Inserting additional governor modules by savie... " >> /data/arcturus/IanKernel.log
+#insmod /lib/modules/cpufreq_interactive.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_brazilianwax.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_conservative.ko
+#sleep 1
+insmod /lib/modules/cpufreq_hotplug.ko
+sleep 1
+insmod /lib/modules/cpufreq_intellidemand.ko
+sleep 1
+#insmod /lib/modules/cpufreq_interactivex.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_lagfree.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_lazy.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_lionheart.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_lulzactive.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_minmax.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_ondemand.ko
+#sleep 1
+insmod /lib/modules/cpufreq_ondemandx.ko
+sleep 1
+#insmod /lib/modules/cpufreq_powersave.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_savagedzen.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_scary.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_smartass.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_smartass2.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_smoothass.ko
+#sleep 1
+#insmod /lib/modules/cpufreq_userspace.ko
+#sleep 1
+echo "- Governor inserting done... " >> /data/arcturus/IanKernel.log
+sync
+
+#ZRAM script, by show-p1984, integrated :)
+if /sbin/busybox test -f /bootparam/zram ; then
+echo "- ZRAM parameter found! Activating ZRAM" >> /data/arcturus/IanKernel.log
+	if [ ! -e /sys/block/zram0/disksize ] ; then
+		echo "[90ZRAM]: ERROR unable to find /sys/block/zram0/disksize";
+		echo "[90ZRAM]: Is this a ZRAM kernel?";
+		echo "[90ZRAM]: ZRAM NOT ACTIVATED. (404)";
+	else
+		echo "[90ZRAM]: Setting ZRAM disksize.";
+		echo $((100*1024*1024)) > /sys/block/zram0/disksize
+
+		echo "[90ZRAM]: Starting ZRAM...";
+		/sbin/busybox mkswap /dev/block/zram0
+		/sbin/busybox swapon /dev/block/zram0
+		echo "[90ZRAM]: ZRAM activated.";
+	fi
+else
+echo "- ZRAM disabled" >> /data/arcturus/IanKernel.log
+fi
+
+/sbin/busybox sync
+/sbin/busybox mount -o remount,ro -t ext4 /dev/stl9 /system
+/sbin/busybox mount -o remount,rw -t ext4 / /
+
+# end bootlog
+echo " "
+echo " IanKernel end of bootlog - ( AT ) - " $(/sbin/busybox date) >> /data/arcturus/IanKernel.log
+echo "===============================================" >> /data/arcturus/IanKernel.log
+echo " " >> /data/arcturus/IanKernel.log
+
+exit

@@ -1,0 +1,5 @@
+#!/sbin/busybox sh
+
+export PATH=/sbin:/system/sbin:/system/bin:/system/xbin
+/sbin/busybox mount -o remount,rw / /
+/sbin/logwrapper /sbin/busybox run-parts /system/etc/init.d

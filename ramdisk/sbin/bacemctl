@@ -1,0 +1,36 @@
+#!/sbin/sh
+#Bacem Tweak Control v0.2 by Alfiyan, @alfiyansys, alfiyan@student.eepis-its.edu
+
+run () {
+	if [ -f /etc/bacem/ctl ]
+	then
+		echo $(cat /etc/bacem/ctl) > /proc/sys/bacem/volt/cpu
+	fi
+}
+
+case $1 in
+	"-140")
+		echo "-140" > /etc/bacem/ctl
+		run;;
+	"-120")
+		echo "-120" > /etc/bacem/ctl
+		run;;
+	"-100")
+		echo "-100" > /etc/bacem/ctl
+		run;;
+	"-80")
+		echo "-80" > /etc/bacem/ctl
+		run;;
+	"-60")
+		echo "-60" > /etc/bacem/ctl
+		run;;
+	"-40")
+		echo "-40" > /etc/bacem/ctl
+		run;;
+	"-20")
+		echo "-20" > /etc/bacem/ctl
+		run;;
+	"def")
+		rm /etc/bacem/ctl
+		reboot;;
+esac

@@ -1,0 +1,9 @@
+#!/system/bin/sh
+#IanKernel Script Control v0.1 by Alfiyan, @alfiyansys, alfiyan@student.eepis-its.edu
+
+case $1 in
+	"kickass on")
+		touch /data/arcturus/kickass;;
+	"kickass off")
+		rm /data/arcturus/kickass;;
+esac

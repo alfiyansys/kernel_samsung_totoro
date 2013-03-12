@@ -1,0 +1,26 @@
+#!/sbin/sh
+echo "==========================================="
+echo "= CPUcheck script by Alfiyan, @alfiyansys ="
+echo "=== alfiyan@student.eepis-its.edu ========="
+echo "== build v2.0, 12 Mar 2013 07:55 =========="
+echo " "
+echo "Kernel version :"
+/sbin/uname -a
+echo "-------------------------------------------"
+echo "CPU freq [KHz]: "
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+echo "-------------------------------------------"
+echo "CPU voltage [microV]: " 
+cat /sys/class/regulator/regulator.5/microvolts
+echo "-------------------------------------------"
+echo "Current Governor: "
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo "-------------------------------------------"
+echo "Bacem tweak run at: "
+if /sbin/busybox test -f /bootparam/nobacem ; then
+	echo "Bacem tweak disabled!"
+else
+	cat /proc/sys/bacem/volt/cpu
+fi
+echo "==========================================="
+#CPU Check Shellscript v1.9 by Alfiyan, @alfiyansys, alfiyan@student.eepis-its.edu
