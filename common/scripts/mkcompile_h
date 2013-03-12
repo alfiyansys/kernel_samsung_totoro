@@ -64,14 +64,8 @@ UTS_TRUNCATE="cut -b -$UTS_LEN"
   echo \#define UTS_VERSION \"`echo $UTS_VERSION | $UTS_TRUNCATE`\"
 
   echo \#define LINUX_COMPILE_TIME \"`date +%T`\"
-  echo \#define LINUX_COMPILE_BY \"alfiyan\"
-#  echo \#define LINUX_COMPILE_BY \"`whoami`\"
-
-##  echo \#define LINUX_COMPILE_HOST \"`echo "student.eepis-its.edu"`\"
-##  echo \#define LINUX_COMPILE_HOST \"$HOME/linux-compile-host\"
-##  echo \#define LINUX_COMPILE_HOST \"student.eepis-its.edu\"
-  echo \#define LINUX_COMPILE_HOST \"regulus-arcturus-labs\"
-#  echo \#define LINUX_COMPILE_HOST \"`hostname | $UTS_TRUNCATE`\"
+  echo \#define LINUX_COMPILE_BY \"`whoami`\"
+  echo \#define LINUX_COMPILE_HOST \"`hostname | $UTS_TRUNCATE`\"
 
   domain=`dnsdomainname 2> /dev/null`
   if [ -z "$domain" ]; then

@@ -103,9 +103,11 @@ static const network_info_s_type Plmn_Table_Samsung[] =
  **** Belgium ****
  *****************/
 /* Belgacom Mobile */
-{ 206,   1, NETWK_TYPE_GSM_900, "PROXIMUS", "PROXIMUS" },
+{ 206,   1, NETWK_TYPE_GSM_900, "Proximus", "Proximus" },
 /* Belgacom Mobile */
-{ 206,   1, NETWK_TYPE_DCS_1800, "PROXIMUS", "PROXIMUS" },
+{ 206,   1, NETWK_TYPE_DCS_1800, "Proximus", "Proximus" },
+/* Telenet */
+{ 206,   5, NETWK_TYPE_GSM_900, "Telenet", "Telenet" },
 /* Mobistar S.A. */
 { 206,  10, NETWK_TYPE_GSM_900, "MOBISTAR", "MOBISTAR" },
 /* Mobistar S.A. */
@@ -113,7 +115,7 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 /* Mobistar S.A. */
 { 206, 10, NETWK_TYPE_UMTS, "MOBISTAR", "MOBISTAR" }, 
 /* KPN Orange Belgium NV/SA */
-{ 206,  20, NETWK_TYPE_DCS_1800, "BASE", "BASE" },
+{ 206,  20, NETWK_TYPE_DCS_1800, "Base", "Base" },
 
 /****************
  **** France ****
@@ -211,7 +213,7 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 /* Tele2 d.o.o za telekomunikacijske uluge */
 { 219, 2, NETWK_TYPE_DCS_1800, "TELE2", "TELE2" }, 
 /* Vip-NET GSM d.o.o. */
-{ 219,  10, NETWK_TYPE_GSM_900, "HR-VIP", "HR-VIP" },//[2009.01.21]sun.mi.jung 왑사양서의 PLMN name으로 수정.
+{ 219,  10, NETWK_TYPE_GSM_900, "HR VIP", "HR VIP" },//[2009.01.21]sun.mi.jung 왑사양서의 PLMN name으로 수정.
 
 /********************
  **** Yugoslavia ****
@@ -353,12 +355,12 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 { 232,	 11, NETWK_TYPE_DCS_1800, "bob", "bob" }, // 2009.04.09 Requirement Austria
 /* bob */
 { 232,	 11, NETWK_TYPE_UMTS, "bob", "bob" }, // 2009.04.09 Requirement Austria
-/* Connect Austria */
-{ 232,   12, NETWK_TYPE_GSM_900, "Orange A", "Orange AT" },// D0100306029 2011/9/16 Orange 사업자 요청
-/* Connect Austria */
-{ 232,   12, NETWK_TYPE_DCS_1800, "Orange A", "Orange AT" },// D0100306029 2011/9/16 Orange 사업자 요청
-/* Connect Austria */
-{ 232,   12, NETWK_TYPE_UMTS, "Orange A", "Orange AT" },// D0100306029 2011/9/16 Orange 사업자 요청
+/* yesss! Austria */
+{ 232,   12, NETWK_TYPE_GSM_900, "yesss!", "yesss!" },
+/* yesss! Austria */
+{ 232,   12, NETWK_TYPE_DCS_1800, "yesss!", "yesss!" },
+/* yesss! Austria */
+{ 232,   12, NETWK_TYPE_UMTS, "yesss!", "yesss!" },
 
 
 /************************
@@ -383,7 +385,7 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 /*  T-Mobile (UK) Limited */
 { 234,  32, NETWK_TYPE_DCS_1800, "T-Mobile UK", "T-Mobile UK" },
 /* Orange PCS Ltd */
-{ 234,  33, NETWK_TYPE_DCS_1800, "Orange", "Orange" },
+{ 234,  33, NETWK_TYPE_DCS_1800, "T-Mobile Orange", "T-Mobile Orange" },
 /* Jersey Telecoms */
 { 234,  50, NETWK_TYPE_GSM_900, "JT GSM", "JT GSM" },
 /* Wave Telecom */
@@ -465,12 +467,12 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 { 242,   2, NETWK_TYPE_DCS_1800, "N NetCom GSM", "N NetCom GSM" },
 /* Teletopia Mobile Communications AS */
 { 242, 3, NETWK_TYPE_DCS_1800, "T3", "T3" }, 
-/* Netwrok Norway */
-{ 242, 5, NETWK_TYPE_GSM_900, "Netwrok Norway", "Netwrok Norway" }, 
-/* Netwrok Norway */
-{ 242, 5, NETWK_TYPE_DCS_1800, "Netwrok Norway", "Netwrok Norway" }, 
-/* Netwrok Norway */
-{ 242, 5, NETWK_TYPE_UMTS, "Netwrok Norway", "Netwrok Norway" },  
+/* Mobile Norway*/
+{ 242, 5, NETWK_TYPE_GSM_900, "Mobile Norway", "Mobile Norway" }, 
+/* Mobile Norway */
+{ 242, 5, NETWK_TYPE_DCS_1800, "Mobile Norway", "Mobile Norway" }, 
+/* Mobile Norway */
+{ 242, 5, NETWK_TYPE_UMTS, "Mobile Norway", "Mobile Norway" },  
 
 /*****************
  **** Finland ****
@@ -486,11 +488,11 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 /* Finnet Group */
 { 244,   9, NETWK_TYPE_DCS_1800, "Finnet", "Finnet" },
 /* Finnet Networks Ltd */
-{ 244,  12, NETWK_TYPE_GSM_900, "FI 2G", "FI 2G" },
+{ 244,  12, NETWK_TYPE_GSM_900, "DNA", "DNA" },
 /* Finnet Networks Ltd */
-{ 244,  12, NETWK_TYPE_DCS_1800, "FI 2G", "FI 2G" },
+{ 244,  12, NETWK_TYPE_DCS_1800, "DNA", "DNA" },
 /* Finnet Networks Ltd */
-{ 244,  12, NETWK_TYPE_UMTS, "FI 2G", "FI 2G" },
+{ 244,  12, NETWK_TYPE_UMTS, "DNA", "DNA" },
 /* Alands Mobiltelefon A.B */
 { 244,  14, NETWK_TYPE_GSM_900, "FI AMT", "FI AMT" },
 /* Sonera Mobile Networks Limited */
@@ -745,10 +747,10 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 { 270,  77, NETWK_TYPE_GSM_900, "Tango", "Tango" },  //2008.12.02 L Tango -> Tango 현채인 Loris Beerten [l.beerten@samsung.com]요청사항 
 /* Tango S.A */
 { 270,  77, NETWK_TYPE_DCS_1800, "Tango", "Tango" }, //2008.12.02 L Tango -> Tango 현채인 Loris Beerten [l.beerten@samsung.com]요청사항 
-/* VOXmobile S.A. */
-{ 270, 99, NETWK_TYPE_DCS_1800, "Orange", "Orange" }, //2008.12.02 VOX.LU -> Vox Mobile 현채인 Loris Beerten [l.beerten@samsung.com]요청사항  
-/* VOXmobile S.A. */
-{ 270, 99, NETWK_TYPE_UMTS, "Orange", "Orange" },     //2008.12.02 VOX.LU -> Vox Mobile 현채인 Loris Beerten [l.beerten@samsung.com]요청사항  
+/* Orange LUX */
+{ 270, 99, NETWK_TYPE_DCS_1800, "Orange LUX", "Orange LUX" },
+/* Orange LUX */
+{ 270, 99, NETWK_TYPE_UMTS, "Orange LUX", "Orange LUX" },
 
 /*****************
  **** Ireland ****
@@ -822,13 +824,13 @@ static const network_info_s_type Plmn_Table_Samsung[] =
  **** Georgia ****
  *****************/
 /* Geocell Limited */
-{ 282,   1, NETWK_TYPE_GSM_900, "GEO-GEOCELL", "GEO-GEOCELL" },
+{ 282,   1, NETWK_TYPE_GSM_900, "Geocell", "Geocell" },
 /* Geocell Limited */
-{ 282,   1, NETWK_TYPE_DCS_1800, "GEO-GEOCELL", "GEO-GEOCELL" },
+{ 282,   1, NETWK_TYPE_DCS_1800, "Geocell", "Geocell" },
 /* Magti GSM */
-{ 282,   2, NETWK_TYPE_GSM_900, "MAGTI-GSM-GEO", "MAGTI-GSM-GEO" },
+{ 282,   2, NETWK_TYPE_GSM_900, "Magticom", "Magticom" },
 /* Magti GSM */
-{ 282,   2, NETWK_TYPE_DCS_1800, "MAGTI-GSM-GEO", "MAGTI-GSM-GEO" },
+{ 282,   2, NETWK_TYPE_DCS_1800, "Magticom", "Magticom" },
 
 /*****************
  **** Armenia ****
@@ -838,9 +840,13 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 /* Karabakh Telecom */
 { 283,   4, NETWK_TYPE_GSM_900, "RA 04", "RA 04" },
 /* K Telecom CJSC */
-{ 283, 5, NETWK_TYPE_GSM_900, "RA 05", "RA 05" }, 
+{ 283, 5, NETWK_TYPE_GSM_900, "VivaCell-MTS", "VivaCell-MTS" }, 
 /* K Telecom CJSC */
-{ 283, 5, NETWK_TYPE_DCS_1800, "RA 05", "RA 05" }, 
+{ 283, 5, NETWK_TYPE_DCS_1800, "VivaCell-MTS", "VivaCell-MTS" }, 
+/* Orange */
+{ 283, 10, NETWK_TYPE_GSM_900, "Orange", "Orange" }, 
+/* Orange */
+{ 283, 10, NETWK_TYPE_DCS_1800, "Orange", "Orange" },
 
 /******************
  **** Bulgaria ****
@@ -1517,9 +1523,14 @@ static const network_info_s_type Plmn_Table_Samsung[] =
  **** Azerbaijan ****
  ********************/
 /* Azercell Telekom B.M. */
-{ 400,   1, NETWK_TYPE_GSM_900, "AZE - AZERCELL GSM", "AZE - AZERCELL GSM" },
+{ 400,   1, NETWK_TYPE_GSM_900, "Azercell", "Azercell" },
+{ 400,   1, NETWK_TYPE_DCS_1800, "Azercell", "Azercell" },
 /* Bakcell */
-{ 400,   2, NETWK_TYPE_GSM_900, "BAKCELL GSM 2000", "BAKCELL GSM 2000" },
+{ 400,   2, NETWK_TYPE_GSM_900, "Bakcell", "Bakcell" },
+{ 400,   2, NETWK_TYPE_DCS_1800, "Bakcell", "Bakcell" },
+/* Nar */
+{ 400,   4, NETWK_TYPE_GSM_900, "Nar", "Nar" },
+{ 400,   4, NETWK_TYPE_DCS_1800, "Nar", "Nar" },
 
 /********************
  **** Kazakhstan ****
@@ -2385,9 +2396,9 @@ static const network_info_s_type Plmn_Table_Samsung[] =
  **** Israel ****
  ****************/
 /* Partner Communications Company Ltd */
-{ 425,   1, NETWK_TYPE_GSM_900, "Orange", "Orange" },   /* refer to selist20080115.xls for Orange [jm0122.yoon 20080122] */
+{ 425,   1, NETWK_TYPE_GSM_900, "ORANGE", "ORANGE" },   /* refer to selist20080115.xls for Orange [jm0122.yoon 20080122] */
 /* Partner Communications Company Ltd */
-{ 425,   1, NETWK_TYPE_DCS_1800, "Orange", "Orange" },   /* refer to selist20080115.xls for Orange [jm0122.yoon 20080122] */
+{ 425,   1, NETWK_TYPE_DCS_1800, "ORANGE", "ORANGE" },   /* refer to selist20080115.xls for Orange [jm0122.yoon 20080122] */
 /* Cellcom Israel Ltd */
 { 425,   2, NETWK_TYPE_DCS_1800, "Cellcom", "Cellcom" },
 /* Cellcom Israel Ltd */
@@ -2396,6 +2407,9 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 { 425,	  3, NETWK_TYPE_GSM_900, "PCL", "PCL" },
 { 425,	  3, NETWK_TYPE_DCS_1800, "PCL", "PCL" },
 { 425,	  3, NETWK_TYPE_UMTS, "PCL", "PCL" },
+/*IL ORANGE*/
+{ 425,	  5, NETWK_TYPE_GSM_900, "ORANGE", "ORANGE" },
+{ 425,	  5, NETWK_TYPE_UMTS, "ORANGE", "ORANGE" },
  /* Wataniya */
 { 425,	  6, NETWK_TYPE_GSM_900, "Wataniya", "Wataniya" },
 { 425,	  6, NETWK_TYPE_DCS_1800, "Wataniya", "Wataniya" },
@@ -2812,6 +2826,8 @@ static const network_info_s_type Plmn_Table_Samsung[] =
 /******************
  **** Thailand ****
  ******************/
+ /* Thailand TRUE-H 3G */
+{ 520,   0, NETWK_TYPE_UMTS, "TRUE-H/CAT 3G", "TRUE-H/CAT 3G" },
 /* Advanced Info Service Plc */
 { 520,   1, NETWK_TYPE_GSM_900, "TH GSM", "TH GSM" },
 /* Wireless Comm. Services Co. */

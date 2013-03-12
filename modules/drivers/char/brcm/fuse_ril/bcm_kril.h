@@ -868,7 +868,8 @@ typedef struct {
 
 typedef enum {
     BRIL_HOOK_UNSOL_SIM_ERROR,        // Notify user SIM Card is error.
-    BRIL_HOOK_UNSOL_SIM_DATA		  //Notify user SIM Data for IMSI/GID1/GID2
+    BRIL_HOOK_UNSOL_SIM_DATA,		  //Notify user SIM Data for IMSI/GID1/GID2
+    BRIL_HOOK_UNSOL_SIM_MSISDN_DATA     //Notify user SIM Data for MSISDN
 } HOOK_unsol_msgType;
 
 

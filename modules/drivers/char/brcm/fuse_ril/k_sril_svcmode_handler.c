@@ -1557,6 +1557,102 @@ static void KRIL_SRIL_requestOemSvcModeTestManual(void *ril_cmd,  Kril_CAPI2Info
 		    break;
 /*- Ciphering Mode sh0515.lee /  Integrity Mode sh0515.lee -*/
 
+		case TST_GET_HSDPA_PHY_CATEGORY:
+		{
+			int rsp=0;
+			
+			KRIL_DEBUG(DBG_ERROR,"TST_GET_HSDPA_PHY_CATEGORY \n");
+
+			rsp = KRIL_SRIL_requestOemSvcGetHsdpaPhyCategoryHandler(ril_cmd , capi2_rsp );
+
+			if (pdata->handler_state == BCM_RESPCAPI2Cmd )
+			{
+				KRIL_DEBUG(DBG_ERROR,"pdata->handler_state == BCM_RESPCAPI2Cmd \n");
+				sprintf(testbuffer[0], "HSDPA Info Get Result");
+				if(rsp != HSxPA_CATEGORY_0 )
+				{
+					sprintf(testbuffer[1], "HSDPA ON");
+				}
+				else
+				{
+					sprintf(testbuffer[1], "HSDPA OFF");
+				}
+			
+				KRIL_SRIL_svc_update_screen(ril_cmd, 2, 0, (unsigned char*)testbuffer, TRUE, TRUE);
+			}
+		}
+		break;
+
+		case TST_SET_HSDPA_PHY_CATEGORY_0: // HSDPA OFF
+		{
+			KRIL_DEBUG(DBG_ERROR,"TST_SET_HSDPA_PHY_CATEGORY_0\n");
+			KRIL_SRIL_requestOemSvcSetHsdpaPhyCategoryHandler(ril_cmd, capi2_rsp, HSxPA_CATEGORY_0 );
+
+			sprintf(testbuffer[0], "HSDPA Control");
+			sprintf(testbuffer[1], "HSDPA OFF");
+			KRIL_SRIL_svc_update_screen(ril_cmd, 2, 0, (unsigned char*)testbuffer, TRUE, TRUE);
+		}
+		  break;
+
+		case TST_SET_HSDPA_PHY_CATEGORY_8: // HSDPA ON
+		{
+			KRIL_DEBUG(DBG_ERROR,"TST_SET_HSDPA_PHY_CATEGORY_8\n");
+			KRIL_SRIL_requestOemSvcSetHsdpaPhyCategoryHandler(ril_cmd, capi2_rsp, HSxPA_CATEGORY_8 );
+
+			sprintf(testbuffer[0], "HSDPA Control");
+			sprintf(testbuffer[1], "HSDPA ON");
+			KRIL_SRIL_svc_update_screen(ril_cmd, 2, 0, (unsigned char*)testbuffer, TRUE, TRUE);
+		}
+		    break;
+
+		case TST_GET_HSUPA_PHY_CATEGORY:
+		{
+			int rsp=0;
+			
+			KRIL_DEBUG(DBG_ERROR,"TST_GET_HSUPA_PHY_CATEGORY \n");
+
+			rsp = KRIL_SRIL_requestOemSvcGetHsupaPhyCategoryHandler(ril_cmd , capi2_rsp );
+
+			if (pdata->handler_state == BCM_RESPCAPI2Cmd )
+			{
+				KRIL_DEBUG(DBG_ERROR,"pdata->handler_state == BCM_RESPCAPI2Cmd \n");
+				sprintf(testbuffer[0], "HSUPA Info Get Result");
+				if(rsp != HSxPA_CATEGORY_0 )
+				{
+					sprintf(testbuffer[1], "HSUPA ON");
+				}
+				else
+				{
+					sprintf(testbuffer[1], "HSUPA OFF");
+				}
+			
+				KRIL_SRIL_svc_update_screen(ril_cmd, 2, 0, (unsigned char*)testbuffer, TRUE, TRUE);
+			}
+		}
+		break;
+
+		case TST_SET_HSUPA_PHY_CATEGORY_0: // HSUPA OFF
+		{
+			KRIL_DEBUG(DBG_ERROR,"TST_SET_HSUPA_PHY_CATEGORY_0\n");
+			KRIL_SRIL_requestOemSvcSetHsupaPhyCategoryHandler(ril_cmd, capi2_rsp, HSxPA_CATEGORY_0 );
+
+			sprintf(testbuffer[0], "HSUPA Control");
+			sprintf(testbuffer[1], "HSUPA OFF");
+			KRIL_SRIL_svc_update_screen(ril_cmd, 2, 0, (unsigned char*)testbuffer, TRUE, TRUE);
+		}
+		  break;
+
+		case TST_SET_HSUPA_PHY_CATEGORY_8: // HSUPA ON
+		{
+			KRIL_DEBUG(DBG_ERROR,"TST_SET_HSUPA_PHY_CATEGORY_8\n");
+			KRIL_SRIL_requestOemSvcSetHsupaPhyCategoryHandler(ril_cmd, capi2_rsp, HSxPA_CATEGORY_8 );
+
+			sprintf(testbuffer[0], "HSUPA Control");
+			sprintf(testbuffer[1], "HSUPA ON");
+			KRIL_SRIL_svc_update_screen(ril_cmd, 2, 0, (unsigned char*)testbuffer, TRUE, TRUE);
+		}
+		    break;
+
 		default : 
 
 			KRIL_DEBUG(DBG_ERROR,"Unsupported subtype:%d Error!!!\n", subtype);

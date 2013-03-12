@@ -625,7 +625,8 @@ void KRIL_RegistationStateHandler(void *ril_cmd, Kril_CAPI2Info_t *capi2_rsp)
                 KRIL_DEBUG(DBG_INFO, "regstate:%d gprs_reg_state:%d mcc:ox%x mnc:0x%x rat:%d lac:%d cell_id:%d network_type:%d band:%d\n", rdata->gsm_reg_state, rdata->gprs_reg_state, rdata->mcc, rdata->mnc, presult->rat, rdata->lac, rdata->cell_id, rdata->network_type, rdata->band);
                 if (presult->rat == RAT_UMTS)
                 {
-                    if (TRUE == presult->uasConnInfo.ue_out_of_service) // if UAS in out of services, MMI need to display the no_services.
+                    if ((TRUE == presult->uasConnInfo.ue_out_of_service) &&
+                        (TRUE == gRegInfo.netInfo.hsdpa_supported || TRUE == gRegInfo.netInfo.hsupa_supported)) // if UAS in out of services and in hsdpa/hsupa support, MMI need to display the no_services.
                     {
                         rdata->gsm_reg_state = REG_STATE_NO_SERVICE;
                         rdata->gprs_reg_state = REG_STATE_NO_SERVICE;
@@ -732,10 +733,10 @@ void KRIL_OperatorHandler(void *ril_cmd, Kril_CAPI2Info_t *capi2_rsp)
                     pdata->handler_state = BCM_ErrorCAPI2Cmd;
                     break;
                 }
-		  if ((presult->gsm_reg_state != REG_STATE_NORMAL_SERVICE 
-                 && presult->gsm_reg_state != REG_STATE_ROAMING_SERVICE
-                 && presult->gsm_reg_state != REG_STATE_LIMITED_SERVICE)
-                    || TRUE == presult->uasConnInfo.ue_out_of_service)
+                if ((presult->gsm_reg_state != REG_STATE_NORMAL_SERVICE &&
+                     presult->gsm_reg_state != REG_STATE_ROAMING_SERVICE &&
+                     presult->gsm_reg_state != REG_STATE_LIMITED_SERVICE) ||
+                    (TRUE == presult->uasConnInfo.ue_out_of_service && (TRUE == gRegInfo.netInfo.hsdpa_supported || TRUE == gRegInfo.netInfo.hsupa_supported)))
                 {
                     pdata->result = BCM_E_OP_NOT_ALLOWED_BEFORE_REG_TO_NW;
                     pdata->handler_state = BCM_ErrorCAPI2Cmd;

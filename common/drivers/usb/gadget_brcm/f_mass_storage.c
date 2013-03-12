@@ -104,6 +104,8 @@ static const char gVendorName4Kies[16] = "SAMSUNG";
 static const char gProductName4Kies[16] = "S5360B Card";
 #elif defined(CONFIG_TARGET_LOCALE_EUR_VODA)
 static const char gProductName4Kies[16] = "S5369 Card";
+#elif defined(CONFIG_TARGET_LOCALE_EUR_ORG)
+static const char gProductName4Kies[16] = "S5369 Card";
 #elif defined(CONFIG_TARGET_LOCALE_AUS_TEL)
 static const char gProductName4Kies[16] = "S5360T Card";
 #else

@@ -332,7 +332,7 @@ static void switch_work(struct work_struct *work)
 			mic.hsbst = ENABLE;
 			board_sysconfig(SYSCFG_AUXMIC, SYSCFG_ENABLE);			
 			schedule_delayed_work(&(mic.type_work), TYPE_DETECT_REF_TIME);
-		}
+	}
 	}
 	else
 	{
@@ -348,8 +348,8 @@ static void switch_work(struct work_struct *work)
 			switch_set_state(&(mic.switch_data.sdev), mic.headset_state);
 
 			printk("%s: plugged out\n", __func__);
-		}
 	}
+}
 }
 
 static void type_work_func(struct work_struct *work)
@@ -439,18 +439,14 @@ static void getIMSI_work_func(struct work_struct *work)
 	SIMLOCK_SIM_DATA_t* simdata = GetSIMData();
 	
 	if(simdata == NULL)
-	{
-		//printk("%s: IMSI NULL\n", __func__);
+	{		
 		FactoryMode = DISABLE;
 	}
 	else
-	{
-		//printk("%s: IMSI %s\n", __func__, simdata->imsi_string);
+	{	
 		FactoryMode = strncmp(simdata->imsi_string, "999999999999999", IMSI_DIGITS) == 0 ?  ENABLE : DISABLE;
 	}
 	
-	printk("%s: Factorymode %d\n", __func__, FactoryMode);
-
 	if(FactoryMode == ENABLE)
 	{
 		if(mic.headset_state)
@@ -734,7 +730,7 @@ static int __init hs_probe(struct platform_device *pdev)
 		KEY3_THRESHOLD_L = mic.headset_pd->key3_threshold_l;
 		KEY3_THRESHOLD_U = mic.headset_pd->key3_threshold_u;
 
-		if (mic.headset_pd->hsgpio == NULL)
+		if (mic.headset_pd->hsgpio == 0)
 			mic.hsirq = mic.headset_pd->hsirq;
 		else
 		{
@@ -779,7 +775,7 @@ static int __init hs_probe(struct platform_device *pdev)
 	board_sysconfig(SYSCFG_HEADSET, SYSCFG_INIT);
 
 	/*Fix the audio path is wrong when headset already plugged in the device  then boot device case.*/
-	if (mic.headset_pd->hsgpio != NULL)
+	if (mic.headset_pd->hsgpio != 0)
 	{
 		mic.headset_pd->check_hs_state(&mic.headset_state);
 		printk("%s: headset_state:%d\n", __func__, mic.headset_state); 
@@ -831,7 +827,7 @@ void __exit BrcmHeadsetModuleExit(void)
 	cancel_work_sync(&mic.switch_data.work);
 	switch_dev_unregister(&mic.switch_data.sdev);
 #endif
-	cancel_work_sync(&mic.imsi_work);
+	cancel_delayed_work_sync(&mic.imsi_work);
 	if(mic.headset_pd->hsgpio)
 		del_timer_sync(&mic.timer);
 	free_irq(mic.hsirq, &mic.switch_data);

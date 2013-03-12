@@ -1498,10 +1498,13 @@ static void max8986_muic_event(int event, u32 param,  void *data)
 			}
 			if(max8986_power->dcd_timout)
 			{
-				pr_info("%s: Invalid Charger\n", __func__);
-				break;
+				pr_info("%s: Invalid Charger(Carkit type)\n", __func__);
+// CS557898, Even broken USB inserted, charging should be enabled. 
+//
+				max8986_power->charger_type = PMU_MUIC_CHGTYP_DEDICATED_CHGR;
+//				break;
 			}
-			max8986_power->charger_type = param;
+			else max8986_power->charger_type = param;
 #if defined(CONFIG_HAS_WAKELOCK)
 			//if(max8986_power->charger_type == PMU_MUIC_CHGTYP_USB ||max8986_power->charger_type == PMU_MUIC_CHGTYP_DOWNSTREAM_PORT)
 				wake_lock(&max8986_power->usb_charger_wl);	/* wake lock is needed only for usb */

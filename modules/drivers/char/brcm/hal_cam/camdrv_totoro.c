@@ -191,7 +191,7 @@ CAM_Sensor_Supported_Params_t CamPrimaryDefault_st =
 	"GT-S5360T" //target name
 #elif defined(CONFIG_TARGET_LOCALE_EUR_O2)
 	"GT-S5363" //target name
-#elif defined(CONFIG_TARGET_LOCALE_EUR_VODA)
+#elif defined(CONFIG_TARGET_LOCALE_EUR_VODA) || defined(CONFIG_TARGET_LOCALE_EUR_ORG)
 	"GT-S5369" //target name
 #elif defined(CONFIG_TARGET_LOCALE_SEA_THL)
 	"GT-S5360B" //target name

@@ -55,6 +55,26 @@ choice
 		bool "EUR VODA"
 	help
 		Support EUR VODA Board				
+	
+	config TARGET_LOCALE_EUR_ORG
+		bool "EUR ORG"
+	help
+		Support EUR ORG Board	
+
+	config TARGET_LOCALE_SEA_THL
+		bool "SEA THL"
+	help
+		Support SEA THL Board			
+
+	config TARGET_LOCALE_MEA_PCL
+		bool "MEA PCL"
+	help
+		Support MEA PCL Board			
+
+	config TARGET_LOCALE_MEA_ISL
+		bool "MEA ISL"
+	help
+		Support MEA ISL Board					
 endchoice
 
 comment "BCM21553 Board Type"

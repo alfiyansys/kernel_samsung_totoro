@@ -119,7 +119,7 @@ void KRIL_InitCmdHandler(void *ril_cmd, Kril_CAPI2Info_t *capi2_rsp)
                 data.inElemType = MS_LOCAL_PHCTRL_ELEM_IMEI;
                 CAPI2_InitClientInfo(&clientInfo, GetNewTID(), GetClientID());
                 CAPI2_MsDbApi_SetElement(&clientInfo, &data);
-                pdata->handler_state = BCM_SMS_ELEM_CLIENT_HANDLE_MT_SMS;
+                pdata->handler_state = BCM_SET_HSDPA_PHY_CATEGORY;
                 break;
             }
 #ifdef CONFIG_BRCM_SIM_SECURE_ENABLE 
@@ -135,6 +135,35 @@ void KRIL_InitCmdHandler(void *ril_cmd, Kril_CAPI2Info_t *capi2_rsp)
             // CAPI2_MS_SetElement() call and fall through to execute the
             // next CAPI2 init call instead...
         }
+         
+	case BCM_SET_HSDPA_PHY_CATEGORY:
+		{
+			struct file *filp;
+			mm_segment_t fs;
+			int ret;
+			int hsdpa_phy_cat = 8;
+
+			filp = filp_open("/data/hsdpa.dat",  O_RDWR|O_SYNC, 0);
+			if (IS_ERR(filp))
+			{
+				// Do not set hsdpa phy category value. just go next case. (Normal operaton)
+				pdata->handler_state = BCM_SMS_ELEM_CLIENT_HANDLE_MT_SMS;
+			}
+			else
+			{
+				// hsdpa phy category is changed to do Vodafone test			
+				fs = get_fs();
+				set_fs(get_ds());
+				ret = filp->f_op->read(filp, (char __user *)&hsdpa_phy_cat, sizeof(hsdpa_phy_cat), &filp->f_pos);
+				set_fs(fs);
+				filp_close(filp, NULL);
+
+				KRIL_DEBUG(DBG_ERROR,"BCM_SET_HSDPA_PHY_CATEGORY\n");
+				CAPI2_SYSPARM_SetHSDPAPHYCategory(GetNewTID(), GetClientID(), hsdpa_phy_cat );
+	        	pdata->handler_state = BCM_SMS_ELEM_CLIENT_HANDLE_MT_SMS;
+	        	break;
+			}
+		}
 
         case BCM_SMS_ELEM_CLIENT_HANDLE_MT_SMS:
         {
@@ -410,7 +439,7 @@ void KRIL_RadioPowerHandler(void *ril_cmd, Kril_CAPI2Info_t *capi2_rsp)
 				if(*OnOff == 0){
 					KRIL_DEBUG(DBG_INFO, "Power off Sim card - Refresh\n");
                     CAPI2_InitClientInfo(&clientInfo, GetNewTID(), GetClientID());
-                    CAPI2_SimApi_PowerOnOffCard (&clientInfo, FALSE, SIM_POWER_ON_INVALID_MODE);
+                    CAPI2_SimApi_PowerOnOffCard (&clientInfo, FALSE, SIM_POWER_OFF_FORCE_MODE);
                     pdata->handler_state = BCM_RESPCAPI2Cmd;
 
 				}else{
@@ -980,7 +1009,7 @@ void ParseIMSIData(KRIL_CmdList_t *pdata, Kril_CAPI2Info_t *capi2_rsp)
     else
     {
         imsi_result->result = BCM_E_SUCCESS;
-        KRIL_DEBUG(DBG_INFO,"IMSI:%s\n", (char*)rsp);
+        // KRIL_DEBUG(DBG_INFO,"IMSI:%s\n", (char*)rsp);
         strncpy(imsi_result->imsi, (char*)rsp, (IMSI_DIGITS+1));
     }
     
@@ -1048,7 +1077,7 @@ static void ParseIMEIData(KRIL_CmdList_t* pdata, Kril_CAPI2Info_t* capi2_rsp)
             // MS database IMEI is not all 0's, so we use it
             strncpy(imei_result->imei, pMSDBImeiStr, IMEI_DIGITS);
             imei_result->imei[IMEI_DIGITS] = '\0';
-            KRIL_DEBUG(DBG_INFO,"Using MS DB IMEI:%s\n", pMSDBImeiStr );
+            KRIL_DEBUG(DBG_INFO,"Using MS DB IMEI\n");
         }
         else
         {
@@ -1061,7 +1090,7 @@ static void ParseIMEIData(KRIL_CmdList_t* pdata, Kril_CAPI2Info_t* capi2_rsp)
             if ( bFound )
             {
                 // got it from sysparms, so copy to the response struct
-                KRIL_DEBUG(DBG_INFO,"Using sysparm IMEI:%s\n", tmpImeiStr );
+                KRIL_DEBUG(DBG_INFO,"Using sysparm IMEI\n");
                 strncpy(imei_result->imei, tmpImeiStr, IMEI_STRING_LEN);
             }
             else

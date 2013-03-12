@@ -69,6 +69,7 @@ static void __exit bcm_fuse_net_exit_module(void);
 // used to generate valid RPC client ID for fuse_net driver
 extern unsigned char SYS_GenClientID(void);
 
+struct wake_lock knet_wake_lock;
 
 /**
    Packet Data EndPoint buffer pool info
@@ -109,6 +110,9 @@ static void bcm_fuse_net_free_entry(uint8_t pdp_cid);
 static unsigned long bcm_fuse_net_last_tx;
 static unsigned long bcm_fuse_net_last_rx;
 struct proc_dir_entry *pentry_brcm_fuse_net_silence;
+
+static int g_bcmnet_wake_time = 6000; //msec
+
 /**
    @fn void bcm_fuse_net_fc_cb(RPC_FlowCtrlEvent_t event, unsigned char8 cid);
  */
@@ -218,6 +222,8 @@ static RPC_Result_t bcm_fuse_net_bd_cb(PACKET_InterfaceType_t interfaceType, uns
     ndrvr_info_ptr->stats.rx_bytes += data_len;
 
     netif_rx(skb);
+
+    wake_lock_timeout(&knet_wake_lock, msecs_to_jiffies(g_bcmnet_wake_time));
 
     return RPC_RESULT_OK;
 }
@@ -378,6 +384,8 @@ static int bcm_fuse_net_tx(struct sk_buff *skb, struct net_device *dev)
     ndrvr_info_ptr->stats.tx_bytes += skb->len;
 
     dev_kfree_skb(skb);
+
+    wake_lock_timeout(&knet_wake_lock, msecs_to_jiffies(g_bcmnet_wake_time));
 
     return(0);
 }
@@ -724,7 +732,7 @@ static int __init bcm_fuse_net_init_module(void)
 
     BNET_DEBUG(DBG_INFO,"%s: << \n", __FUNCTION__);
     spin_lock_init(&g_dev_lock);
-
+    wake_lock_init(&knet_wake_lock, WAKE_LOCK_SUSPEND, "knet_wake_lock");
 
     for (i = 0; i < BCM_NET_MAX_PDP_CNTXS; i++)
     {
@@ -751,6 +759,8 @@ static void __exit bcm_fuse_net_exit_module(void)
 {
    unsigned int i = 0;
 
+   wake_lock_destroy(&knet_wake_lock);
+
    for (i = 0; i < BCM_NET_MAX_PDP_CNTXS; i++)
    {
       bcm_fuse_net_deattach(i);
@@ -758,6 +768,8 @@ static void __exit bcm_fuse_net_exit_module(void)
    remove_proc_entry("brcm_fuse_net_silence", NULL);
    return;
 }
+
+module_param_named(pdp_waketime, g_bcmnet_wake_time, int, 0664);
 
 module_init(bcm_fuse_net_init_module);
 module_exit(bcm_fuse_net_exit_module);

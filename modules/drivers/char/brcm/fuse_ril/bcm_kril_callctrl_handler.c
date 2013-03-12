@@ -266,7 +266,7 @@ void KRIL_GetCurrentCallHandler(void *ril_cmd, Kril_CAPI2Info_t *capi2_rsp)
         {
             PHONE_NUMBER_STR_t *rsp = (PHONE_NUMBER_STR_t *) capi2_rsp->dataBuf;
             KrilCallListState_t *rdata = (KrilCallListState_t *)pdata->bcm_ril_rsp;
-            KRIL_DEBUG(DBG_INFO, "MSG_CC_GETCALLNUMBER_RSP::phone_number:%s\n",rsp->phone_number);
+            //KRIL_DEBUG(DBG_INFO, "MSG_CC_GETCALLNUMBER_RSP::phone_number:%s\n",rsp->phone_number);
 
             if(rsp->phone_number[0] == INTERNATIONAL_CODE)
             {
@@ -281,7 +281,7 @@ void KRIL_GetCurrentCallHandler(void *ril_cmd, Kril_CAPI2Info_t *capi2_rsp)
                 rdata->KRILCallState[rdata->index].toa = TOA_Unknown;
             }
             strncpy(rdata->KRILCallState[rdata->index].number, rsp->phone_number, PHONE_NUMBER_LENGTH_MAX);
-            KRIL_DEBUG(DBG_INFO, "MSG_CC_GETCALLNUMBER_RSP::rdata->index:%d KRILCallState->phone_number:%s\n", rdata->index, rdata->KRILCallState[rdata->index].number);
+            KRIL_DEBUG(DBG_INFO, "MSG_CC_GETCALLNUMBER_RSP::rdata->index:%d\n", rdata->index);
             CAPI2_CC_IsMultiPartyCall(GetNewTID(), GetClientID(), rdata->KRILCallState[rdata->index].index);
             pdata->handler_state = BCM_CC_IsMultiPartyCall;
         }
@@ -526,7 +526,7 @@ void KRIL_DialHandler(void *ril_cmd, Kril_CAPI2Info_t *capi2_rsp)
             	KrilCallRetryInfo_t *context = (KrilCallRetryInfo_t *)pdata->cmdContext;
                 memset(context, 0, sizeof(KrilCallRetryInfo_t));
 
-                KRIL_DEBUG(DBG_INFO, "address:%s clir:%d, is emergency:%d\n", tdata->address, tdata->clir, tdata->isEmergency);
+                KRIL_DEBUG(DBG_INFO, "clir:%d, is emergency:%d\n", tdata->clir, tdata->isEmergency);
                 memset(&m_VoiceCallParam, 0, sizeof(VoiceCallParam_t));
 
                 m_VoiceCallParam.subAddr = defaultSubAddress;
@@ -886,7 +886,8 @@ void KRIL_HungupWaitingOrBackgroundHandler(void *ril_cmd, Kril_CAPI2Info_t *capi
 
         case BCM_RESPCAPI2Cmd:
         {
-            if(capi2_rsp->result == RESULT_OK)
+            if(capi2_rsp->result == RESULT_OK ||
+               capi2_rsp->result == CC_END_CALL_SUCCESS)
             {
                 pdata->handler_state = BCM_FinishCAPI2Cmd;
             }
@@ -958,21 +959,32 @@ void KRIL_HungupForegroundResumeBackgroundHandler(void *ril_cmd, Kril_CAPI2Info_
 
         case BCM_CC_EndMPTYCalls:
         {
-            g_totalMPTYCall--;
-            KRIL_DEBUG(DBG_INFO,"g_totalMPTYCall:%d\n", g_totalMPTYCall);
-            if (0 == g_totalMPTYCall)
+            if (CC_END_CALL_SUCCESS == capi2_rsp->result || RESULT_OK == capi2_rsp->result)
             {
-                KRIL_SetHungupForegroundResumeBackgroundEndMPTY(0);
-                // ***YY*** Revert the change
-                CAPI2_CC_GetNextWaitCallIndex(GetNewTID(), GetClientID());
-                // **MAG** use GetAllHeldCallIndex so we can check for MPTY call
-                //CAPI2_CC_GetAllHeldCallIndex(GetNewTID(), GetClientID());
-                pdata->handler_state = BCM_CC_GetNextWaitCallIndex;
+                g_totalMPTYCall--;
+                KRIL_DEBUG(DBG_INFO,"g_totalMPTYCall:%d\n", g_totalMPTYCall);
+                if (0 == g_totalMPTYCall)
+                {
+                    KRIL_SetHungupForegroundResumeBackgroundEndMPTY(0);
+                    // ***YY*** Revert the change
+                    CAPI2_CC_GetNextWaitCallIndex(GetNewTID(), GetClientID());
+                    // **MAG** use GetAllHeldCallIndex so we can check for MPTY call
+                    //CAPI2_CC_GetAllHeldCallIndex(GetNewTID(), GetClientID());
+                    pdata->handler_state = BCM_CC_GetNextWaitCallIndex;
+                }
+                else
+                {
+                     // tid for handler will be updated in KRIL_ResponseHandler() on returning from here, so update here to new tid
+                     KRIL_SetHungupForegroundResumeBackgroundEndMPTY(GetNewTID());
+                }
             }
-            else
+            else // MSG_CC_ENDMPTYCALLS_REQ fail
             {
-                 // tid for handler will be updated in KRIL_ResponseHandler() on returning from here, so update here to new tid
-                 KRIL_SetHungupForegroundResumeBackgroundEndMPTY(GetNewTID());
+                g_totalMPTYCall = 0;
+                KRIL_DEBUG(DBG_INFO,"result:%d\n", capi2_rsp->result);
+                KRIL_SetHungupForegroundResumeBackgroundEndMPTY(0);
+                CAPI2_CC_GetNextWaitCallIndex(GetNewTID(), GetClientID());
+                pdata->handler_state = BCM_CC_GetNextWaitCallIndex;
             }
 
                

@@ -31,6 +31,7 @@ static Boolean sHspaChnlAlloc = FALSE;
 
 Boolean StkCall= FALSE;  // gearn setup call 
 Boolean StkIcon= FALSE;  // gearn not support icon TR
+Boolean Msisdnck= FALSE;  // solokou check MSISDN
 
 #ifdef BRCM_AGPS_CONTROL_PLANE_ENABLE
 #include "capi2_lcs_cplane_api.h"
@@ -2016,7 +2017,6 @@ UInt16 ParseUssdString(UInt8 *simple_tlv_ptr, SATKNum_t* num)
     UInt16 total_byte  = 0;
     UInt8  *tlv_ptr = simple_tlv_ptr;
 	UInt8* tlv_len_ptr = NULL;
-	UInt16 septet_len = 0;
 	UInt8 septet_string[MAX_SIMPLE_TLV_DATA_LENGTH];
 	UInt8 total_ussd_len = 0;
     
@@ -2025,19 +2025,7 @@ UInt16 ParseUssdString(UInt8 *simple_tlv_ptr, SATKNum_t* num)
     tlv_ptr += 1;
     total_byte += 1;
     
-    
-    
-	// convert from octets to septets for CB default alphabet
-    if (KRIL_GetCharacterSet(num->dcs) == KRIL_CHARACTER_SET_GSM_7_BIT_DEFAULT)
-	{
-		KRIL_DEBUG(DBG_INFO,"pack USSD Octets to Septets\n");
-		septet_len = KRIL_USSDOctet2Septet(num->Num, septet_string, num->len);
-		total_ussd_len = septet_len + 1; //1 byte for DCS
-	}
-	else
-	{
-        total_ussd_len = num->len + 1; //1 byte for DCS
-	}
+    total_ussd_len = num->len + 1; //1 byte for DCS
     
 	//Fill length
 	if(total_ussd_len > 127)
@@ -2060,15 +2048,7 @@ UInt16 ParseUssdString(UInt8 *simple_tlv_ptr, SATKNum_t* num)
     total_byte += 1;    
 
     // Fill USSD String
-	if(septet_len > 0)
-	{
-        memcpy(tlv_ptr, septet_string, total_ussd_len - 1);
-		
-	}
-	else
-	{
-        memcpy(tlv_ptr, num->Num, total_ussd_len - 1);
-	}
+    memcpy(tlv_ptr, num->Num, total_ussd_len - 1);
 
 	tlv_ptr += total_ussd_len - 1;
     total_byte += total_ussd_len - 1;
@@ -4427,18 +4407,20 @@ void ProcessSATKRefresh(void *dataBuf)
         case SMRT_INIT:
             data[0] = BCM_SIM_INIT;
             data[1] = 0;
+            Msisdnck= FALSE;
             break;
         
         case SMRT_FILE_CHANGED:
             data[0] = BCM_SIM_FILE_UPDATE;
             path_len = pRefresh->FileIdList.changed_file[0].path_len;
             data[1] = (int)pRefresh->FileIdList.changed_file[0].file_path[path_len-1];
-            KRIL_DEBUG(DBG_INFO,"SMRT_FILE_CHANGED: data[1]:0x%X\n",data[1]);
+            KRIL_DEBUG(DBG_INFO,"SMRT_FILE_CHANGED: data[1]:0x%X\n",data[1]); 
             break;
         case SMRT_RESET:
              data[0] = BCM_SIM_RESET;
              data[1] = 0;
              gIsStkRefreshReset = TRUE;
+             Msisdnck= FALSE;
              KRIL_DEBUG(DBG_ERROR,"ParseSATKRefresh() SMRT_RESET!!\n");
              KRIL_SendNotify(BRCM_RIL_UNSOL_SIM_REFRESH, data, sizeof(int)*2);
              //return;
@@ -5532,7 +5514,7 @@ void  ProcessSSNotification(Kril_CAPI2Info_t * data)
        ndata->notificationType = 1;
        ndata->code = 4;
     }
-    else if (theNotifyParamPtr->include & (0x01 << 9)) //Name Indicator
+    else if (theNotifyParamPtr->include & (0x01 << 8)) //Name Indicator
     {
        ndata->notificationType = 1;
        if (theNotifyParamPtr->ectInd.ectCallState == SS_ECT_CALL_STATE_ALERTING)
@@ -5748,12 +5730,35 @@ void ProcessNotification(Kril_CAPI2Info_t *notify)
             break;
 
         case MSG_PBK_READY_IND:
+        {       char msg[5 + 33]  ;	///< NULL terminated IMSI string in ASCII format
+                PBK_ENTRY_DATA_RSP_t *pbk_entry = (PBK_ENTRY_DATA_RSP_t*) notify->dataBuf;
+                KRIL_DEBUG(DBG_ERROR,"MSG_PBK_READY_IND");
+                if ( pbk_entry->pbk_id == PB_MSISDN){
+					/* handle the MSISDN message */
+        		//	KRIL_DEBUG(DBG_ERROR,"BRIL_HOOK_UNSOL_SIM_MSISDN_DATA: %s \n", pbk_entry->pbk_rec.number);
+				if (Msisdnck == FALSE){
+        			memset(msg,0,sizeof(msg));
+		
+        			msg[0]=(UInt8)'B';
+        			msg[1]=(UInt8)'R';
+        			msg[2]=(UInt8)'C';
+        			msg[3]=(UInt8)'M';
+        			msg[4]=(UInt8)BRIL_HOOK_UNSOL_SIM_MSISDN_DATA;
+        			memcpy(&(msg[5]),pbk_entry->pbk_rec.number,33);
+        			KRIL_SendNotify(BRCM_RIL_UNSOL_OEM_HOOK_RAW, msg, sizeof(msg));
+        			Msisdnck = TRUE;
+        			}
+        		}else
+        		{
             if(!KRIL_DevSpecific_Cmd(BCM_KRIL_CLIENT, KRIL_REQUEST_QUERY_SIM_EMERGENCY_NUMBER, NULL, 0))
             {
                 KRIL_DEBUG(DBG_ERROR,"Command KRIL_REQUEST_QUERY_SIM_EMERGENCY_NUMBER failed\n");
             }
-            break;
+        		}
 
+
+            break;
+        }
         case MSG_HOMEZONE_STATUS_IND:
             KRIL_DEBUG(DBG_INFO, "MSG_HOMEZONE_STATUS_IND::not process\n");
             break;

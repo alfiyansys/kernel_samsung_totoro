@@ -17,6 +17,10 @@
 #include <linux/mmc/card.h>
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/sd.h>
+#include <linux/mmc/core.h>
+#include <mach/sdio.h>
+#include "../host/bcmsdhc.h"
+
 
 #include "core.h"
 #include "bus.h"
@@ -637,12 +641,15 @@ static int mmc_sd_suspend(struct mmc_host *host)
 static int mmc_sd_resume(struct mmc_host *host)
 {
 	int err;
+	struct bcmsdhc_host *bcm_host;
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
 	int retries;
 #endif
 
 	BUG_ON(!host);
 	BUG_ON(!host->card);
+
+	bcm_host = mmc_priv(host);
 
 	mmc_claim_host(host);
 #ifdef CONFIG_MMC_PARANOID_SD_INIT
@@ -655,6 +662,12 @@ static int mmc_sd_resume(struct mmc_host *host)
 			       mmc_hostname(host), err, retries);
 			mdelay(5);
 			retries--;
+			if(bcm_host->bcm_plat->flags&SDHC_DEVTYPE_SD){
+				//force to power-off/on
+				mmc_power_off_brcm(host);
+				mdelay(1);
+				mmc_power_up_brcm(host);
+			}
 			continue;
 		}
 		break;
