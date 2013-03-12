@@ -2,7 +2,7 @@
 * Copyright 2010 Broadcom Corporation.  All rights reserved.
 *
 * 	@file	arch/arm/mach-bcm215xx/clock-21553.c
-*
+* 
 * Unless you and Broadcom execute a separate written software license agreement
 * governing use of this software, this software is licensed to you under the
 * terms of the GNU General Public License version 2, available at
@@ -592,24 +592,29 @@ unsigned long bcm21553_arm11_get_rate(struct clk *clk)
 int bcm21553_arm11_set_rate(struct clk *clk, unsigned long val)
 {
 	u32 mode;
-	u32 arm11_freq[2];
+	u32 arm11_freq[5];
 	u32 apps_pll_freq = bcm21553_apps_pll_get_rate();
 
-	arm11_freq[0] = FREQ_MHZ(312);
-	arm11_freq[1] = (apps_pll_freq*2)/3;
+	arm11_freq[0] = FREQ_MHZ(104);
+	arm11_freq[1] = FREQ_MHZ(312);
+	arm11_freq[2] = FREQ_MHZ(468);
+	arm11_freq[3] = FREQ_MHZ(624);
+	arm11_freq[4] = (apps_pll_freq*2)/3;
 
-	/*we support only two modes  - 0xC & 0xF*/
+	/*we support only two modes  - 0xC & 0xF - thats what she said*/
 	if (val == arm11_freq[0])
-	{
-		mode = 0x0C;
-	}
+		mode = 0x09;
 	else if (val == arm11_freq[1])
-	{
+		mode = 0x0C;
+	else if (val == arm11_freq[2])
+		mode = 0x0D;
+	else if (val == arm11_freq[3])
+		mode = 0x0E;
+	else if (val == arm11_freq[4])
 		mode = 0x0F;
-	} else
-	{
+	else
 		return -EINVAL;
-	}
+
 	//writel(mode, ADDR_CLKPWR_CLK_ARMAHB_MODE);
 	bcm215xx_set_armahb_mode(mode);
 	return 0;
@@ -617,16 +622,19 @@ int bcm21553_arm11_set_rate(struct clk *clk, unsigned long val)
 
 long bcm21553_arm11_round_rate(struct clk *clk, unsigned long desired_val)
 {
-	u32 arm11_freq[2];
+	u32 arm11_freq[5];
 	u32 apps_pll_freq = bcm21553_apps_pll_get_rate();
 
 	/*we support only two freq  - 312Mhz & appPll/1.5*/
-	arm11_freq[0] = FREQ_MHZ(312);
-	arm11_freq[1] = (apps_pll_freq*2)/3;
+	arm11_freq[0] = FREQ_MHZ(104);
+	arm11_freq[1] = FREQ_MHZ(312);
+	arm11_freq[2] = FREQ_MHZ(468);
+	arm11_freq[3] = FREQ_MHZ(624);
+	arm11_freq[4] = (apps_pll_freq*2)/3;
 
 	return (long)bcm21553_generic_round_rate(desired_val,
 						 arm11_freq,
-						 2);
+						 5);
 }
 
 /*AHB clock*/

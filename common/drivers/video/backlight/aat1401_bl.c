@@ -1,6 +1,6 @@
 /*
  * linux/drivers/video/backlight/s2c_bl.c
- *
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -55,7 +55,7 @@ static int backlight_mode=1;
 
 #define MAX_BRIGHTNESS_IN_BLU	33
 #if defined(CONFIG_BACKLIGHT_TOTORO)
-#define DIMMING_VALUE		2
+#define DIMMING_VALUE		1
 #elif defined(CONFIG_BACKLIGHT_LUISA)
 #define DIMMING_VALUE		1
 #elif defined(CONFIG_BACKLIGHT_TASSVE)
@@ -66,7 +66,7 @@ static int backlight_mode=1;
 #define DIMMING_VALUE		1
 #endif
 #define MAX_BRIGHTNESS_VALUE	255
-#define MIN_BRIGHTNESS_VALUE	30
+#define MIN_BRIGHTNESS_VALUE	12
 #define BACKLIGHT_DEBUG 0
 #define BACKLIGHT_SUSPEND 0
 #define BACKLIGHT_RESUME 1
@@ -92,33 +92,35 @@ struct brt_value{
 
 #if defined(CONFIG_BACKLIGHT_TOTORO)
 struct brt_value brt_table_ktd[] = {
-	{ MIN_BRIGHTNESS_VALUE,  2 }, // Min pulse 27(33-6) by HW 
-	{ 39,  3 }, 
-	{ 48,  4 }, 
-	{ 57,  5 }, 
-	{ 66,  6 }, 
-	{ 75,  7 }, 
-	{ 84,  8 },  
-	{ 93,  9 }, 
-	{ 102,	10 }, 
-	{ 111,	11 },	
-	{ 120,	12 }, 
-	{ 129,	13 }, 
-	{ 138,  14 },//default value 21 (33-12) 
-	{ 147,	15 }, 
-	{ 155,  16 },
-	{ 163,	17 },  
-	{ 170,	18 },  
-	{ 178,	19 }, 
-	{ 186,  20 },
-	{ 194,  21 }, 
-	{ 202,  22 },
-	{ 210,	23 },  
-	{ 219,	24 }, 
-	{ 228,	25 }, 
-	{ 237,  26 },  
-	{ 246,	27 }, 
-	{ MAX_BRIGHTNESS_VALUE,  28 }, // Max pulse 7(33-26) by HW
+	{ MIN_BRIGHTNESS_VALUE,  1 }, // Min pulse 27(33-6) by HW 
+	{ 21,  2 }, 
+	{ 30,  3 }, 
+	{ 39,  4 }, 
+	{ 48,  5 }, 
+	{ 57,  6 }, 
+	{ 66,  7 }, 
+	{ 75,  8 }, 
+	{ 84,  9 },  
+	{ 93,  10 }, 
+	{ 102,	11 }, 
+	{ 111,	12 },	
+	{ 120,	13 }, 
+	{ 129,	14 }, 
+	{ 138,  15 },//default value 21 (33-12) 
+	{ 147,	16 }, 
+	{ 155,  17 },
+	{ 163,	18 },  
+	{ 170,	19 },  
+	{ 178,	20 }, 
+	{ 186,  21 },
+	{ 194,  22 }, 
+	{ 202,  23 },
+	{ 210,	24 },  
+	{ 219,	25 }, 
+	{ 228,	26 }, 
+	{ 237,  27 },  
+	{ 246,	28 }, 
+	{ MAX_BRIGHTNESS_VALUE,  29 }, // Max pulse 7(33-26) by HW
 
 };
 #elif defined(CONFIG_BACKLIGHT_LUISA)

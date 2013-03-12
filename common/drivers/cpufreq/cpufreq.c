@@ -20,6 +20,7 @@
 #include <linux/init.h>
 #include <linux/notifier.h>
 #include <linux/cpufreq.h>
+#include <linux/arcturus.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>

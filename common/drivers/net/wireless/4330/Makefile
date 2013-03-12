@@ -75,9 +75,6 @@ DHDCFLAGS += -DDTIM_CNT1
 #MobileAP fw_reload
 DHDCFLAGS += -DMOBILEAP_RELOAD
 
-# For Soft Roaming ENABLE
-DHDCFLAGS += -DROAM_ENABLE
-
 ###############################################################################################
 
 EXTRA_CFLAGS +=	-I$(src)/src/include/ \
